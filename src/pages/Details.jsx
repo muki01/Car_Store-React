@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Mainn from "../components/main";
-// import Articlee from "../components/article";
-// import Section from "../components/sections";
 import Aside from "../components/aside";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

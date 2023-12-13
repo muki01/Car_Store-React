@@ -328,6 +328,7 @@ aside .socialMedia .post {
 }
 
 aside .socialMedia .post a {
+    padding: 10px;
     text-align: center;
     border-radius: 5px;
     color: white;
@@ -336,11 +337,6 @@ aside .socialMedia .post a {
 aside hr {
     border: 2px solid #e0e0e0;
     margin-bottom: 10px;
-}
-
-aside .socialMedia .post a i {
-    line-height: 40px;
-    font-size: 20px;
 }
 
 aside .socialMedia .post a:hover {

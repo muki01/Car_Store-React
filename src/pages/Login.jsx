@@ -1,14 +1,34 @@
 // import "../assets/styles/login_register_edit_create.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from 'react';
 import Header from "../components/header";
 import Footer from "../components/footer";
-// import Mainn from "../components/main";
-// import Articlee from "../components/article";
-// import Section from "../components/sections";
-// import Aside from "../components/aside";
 import { Helmet } from "react-helmet";
 
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+
 const Login = () => {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const login = (e) => {
+        e.preventDefault();
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                navigate("/")
+                console.log(user);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage)
+            });
+
+    }
+
     return (
         <>
             <Helmet>
@@ -19,12 +39,12 @@ const Login = () => {
                 <div className="main-container">
                     <div className="box">
                         <h1 className="formName">Login</h1>
-                        <form>
+                        <form onSubmit={login}>
                             <label>Email</label>
-                            <input type="email" formControlName="email" name="email" required email />
+                            <input type="email" name="email" onChange={(e) => setEmail(e.target.value)} required />
 
                             <label>Password</label>
-                            <input type="password" formControlName="password" name="password" minlength="6" required />
+                            <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} minLength="6" required />
 
                             <button className="submitBtn" type="submit">Login</button>
                         </form>

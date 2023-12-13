@@ -3,12 +3,28 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import HeroBanner from "../components/heroBanner";
 import Mainn from "../components/main";
-import Articlee from "../components/article";
 import Section from "../components/sections";
 import Aside from "../components/aside";
 import { Helmet } from "react-helmet";
 
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
+
 const Home = () => {
+
+    // useEffect(() => {
+    //     onAuthStateChanged(auth, (user) => {
+    //         if (user) {
+    //             const uid = user.uid;
+    //             console.log("uid", uid)
+    //         } else {
+    //             console.log("user is logged out")
+    //         }
+    //     });
+
+    // }, [])
+
     return (
         <>
             <Helmet>
@@ -18,9 +34,7 @@ const Home = () => {
                 <Header></Header>
             </HeroBanner>
             <Mainn>
-                <Section>
-                    <Articlee></Articlee>
-                </Section>
+                <Section></Section>
                 <Aside></Aside>
             </Mainn>
             <Footer></Footer>

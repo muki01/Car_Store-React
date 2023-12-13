@@ -2,7 +2,39 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
 const Header = () => {
+    const navigate = useNavigate();
+    const [uid, setUid] = useState("");
+
+    const logout = () => {
+        signOut(auth).then(() => {
+            navigate("/");
+            console.log("Signed out successfully")
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+    }
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("uid", uid)
+                setUid(user.uid);
+            } else {
+                console.log("user is logged out")
+                setUid("");
+            }
+        });
+
+    }, [])
+
     return (
 
         <header>
@@ -21,11 +53,18 @@ const Header = () => {
                         <li><Link to="/" className="active">Home</Link></li>
                         <li><Link to="/category">Cars</Link></li>
                         <li><Link to="/category">Bikes</Link></li>
-                        <li><Link to="/create">Create post</Link></li>
-                        <li><Link to="/logout">LogOut</Link></li>
-                        <li><Link to="/profile">My Profile</Link></li>
-                        <li><Link to="/login">LogIn</Link></li>
-                        <li><Link to="/register" className="register">Register</Link></li>
+                        {uid ? (
+                            <>
+                                <li><Link to="/create">Create post</Link></li>
+                                <li><a onClick={logout}>LogOut</a></li>
+                                <li><Link to="/profile">My Profile</Link></li>
+                            </>
+                        ) : (
+                            <>
+                                <li><Link to="/login">LogIn</Link></li>
+                                <li><Link to="/register" className="register">Register</Link></li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>
