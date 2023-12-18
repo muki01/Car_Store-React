@@ -534,6 +534,7 @@ footer .textArea .colored {
         overflow: hidden;
         visibility: hidden;
         transition: all 0.5s ease;
+        z-index: 1;
     }
 
     header .navBar.open {

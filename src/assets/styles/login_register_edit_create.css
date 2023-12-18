@@ -140,9 +140,15 @@ main {
     background-size: cover;
     background-position: center;
 }
+.bg2 {
+    background: radial-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url("../images/background2.jpg");
+    background-size: cover;
+    background-position: center;
+}
 .bg3 {
     background: radial-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-        url("../images/background3.gif");
+        url("../images/background3.jpg");
     background-size: cover;
     background-position: center;
 }
@@ -299,6 +305,7 @@ footer .textArea .colored {
         overflow: hidden;
         visibility: hidden;
         transition: all 0.5s ease;
+        z-index: 1;
     }
 
     header .navBar.open {

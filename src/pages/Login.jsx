@@ -15,18 +15,19 @@ const Login = () => {
 
     const login = (e) => {
         e.preventDefault();
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                navigate("/")
-                console.log(user);
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage)
-            });
 
+        try {
+            const userCredential = signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            console.log('User login successfully!');
+            console.log(user);
+            navigate("/");
+        } catch (error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('An error occurred during login:', errorCode, errorMessage);
+        }
     }
 
     return (

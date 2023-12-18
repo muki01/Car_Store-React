@@ -6,7 +6,8 @@ import Footer from "../components/footer";
 import { Helmet } from "react-helmet";
 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { setDoc, doc } from "firebase/firestore";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -16,22 +17,26 @@ const Register = () => {
     const [repassword, setRepassword] = useState('');
 
     const register = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        await createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user);
-                navigate("/login")
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, {
+                username: username,
+                email: email,
+                image: "https://img.freepik.com/free-icon/user_318-159711.jpg",
+                likedPosts: [],
             });
 
-
-    }
+            console.log('User registered successfully!');
+            navigate("/");
+        } catch (error) {
+            console.error('An error occurred during registration:', error);
+        }
+    };
 
     return (
         <>

@@ -10,29 +10,40 @@ import { useState, useEffect } from 'react';
 const Header = () => {
     const navigate = useNavigate();
     const [uid, setUid] = useState("");
+    const [isActive, setIsActive] = useState(false);
+
+    const navToggle = () => {
+        setIsActive(!isActive);
+        const navBar = document.querySelector(".navBar");
+        navBar.classList.toggle("open");
+
+        if (navBar.classList.contains("open")) {
+            navBar.style.maxHeight = navBar.scrollHeight + "px";
+        } else {
+            navBar.removeAttribute("style");
+        }
+    };
 
     const logout = () => {
-        signOut(auth).then(() => {
+        try {
+            signOut(auth)
             navigate("/");
             console.log("Signed out successfully")
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-        });
+        } catch (error) {
+            console.error('Signed out error:', error);
+        };
     }
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("uid", uid)
-                setUid(user.uid);
-            } else {
-                console.log("user is logged out")
-                setUid("");
-            }
-        });
+    const handleAuthStateChange = (user) => {
+        if (user) {
+            setUid(user.uid);
+        } else {
+            setUid("");
+        }
+    };
 
+    useEffect(() => {
+        onAuthStateChanged(auth, handleAuthStateChange);
     }, [])
 
     return (
@@ -40,24 +51,24 @@ const Header = () => {
         <header>
             <div className="container">
                 <div className="logoArea">
-                    <Link to="/" className="image"><img src="./src/assets/images/logo2.png" alt="" /></Link>
+                    <Link to="/" className="image"><img src="/src/assets/images/logo.png" alt="" /></Link>
                     <Link to="/" className="siteName">
                         <h1><span className="highlight">Game</span> Store</h1>
                     </Link>
                 </div>
                 <div className="menuArea">
-                    <FontAwesomeIcon icon={faBars} className="menuBtn" />
+                    <FontAwesomeIcon icon={faBars} className="menuBtn" onClick={navToggle} />
                 </div>
                 <div className="navBar">
                     <ul>
                         <li><Link to="/" className="active">Home</Link></li>
-                        <li><Link to="/category">Cars</Link></li>
-                        <li><Link to="/category">Bikes</Link></li>
+                        <li><Link to="/category/cars">Cars</Link></li>
+                        <li><Link to="/category/bikes">Bikes</Link></li>
                         {uid ? (
                             <>
                                 <li><Link to="/create">Create post</Link></li>
                                 <li><a onClick={logout}>LogOut</a></li>
-                                <li><Link to="/profile">My Profile</Link></li>
+                                <li><Link to={`/profile/${uid}`}>My Profile</Link></li>
                             </>
                         ) : (
                             <>

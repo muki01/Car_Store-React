@@ -2,9 +2,47 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFacebookF, faInstagram, faTwitter, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
 
-const Aside = () => {
-    return (
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from '../firebase';
+import { useState, useEffect } from 'react';
+import { getDoc, doc } from 'firebase/firestore';
 
+const Aside = () => {
+    const [uid, setUid] = useState("");
+    const [userData, setUserData] = useState("");
+
+    const handleAuthStateChange = (user) => {
+        if (user) {
+            setUid(user.uid);
+            getUserInfo(user.uid);
+        } else {
+            setUid("");
+        }
+    };
+
+    const getUserInfo = async (uid) => {
+        try {
+            const userDocRef = doc(db, 'users', uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                setUserData(userData)
+                // console.log('User data:', userData);
+                // console.log('Liked Posts:', userData.likedPosts);
+            } else {
+                console.log('User not found');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    useEffect(() => {
+        onAuthStateChanged(auth, handleAuthStateChange);
+    }, [])
+
+    return (
         <aside>
             <div className="box socialMedia">
                 <div className="container">
@@ -33,24 +71,15 @@ const Aside = () => {
                 <div className="container">
                     <h1>Popular Posts</h1>
                     <hr />
+
+
                     <div className="post">
                         <Link to="/gameDetails"><img src="/src/assets/images/bmw2.jpg" /></Link>
                         <Link to="/gameDetails">
                             <h2>BMW 1</h2>
                         </Link>
                     </div>
-                    <div className="post">
-                        <Link to="/gameDetails"><img src="/src/assets/images/bmw3.jpg" /></Link>
-                        <Link to="/gameDetails">
-                            <h2>BMW 2</h2>
-                        </Link>
-                    </div>
-                    <div className="post">
-                        <Link to="/gameDetails"><img src="/src/assets/images/bmw4.jpg" /></Link>
-                        <Link to="/gameDetails">
-                            <h2>BMW 3</h2>
-                        </Link>
-                    </div>
+
 
                     {/* <div className="noGames">
                             <h2>No Games yet.</h2>
@@ -61,20 +90,23 @@ const Aside = () => {
                 <div className="container">
                     <h1>Your Profile</h1>
                     <hr />
-                    <div className="post">
-                        <Link to="/profile"><img src="/src/assets/images/user.png" /></Link>
-                        <div className="textArea">
-                            <Link to="/profile">
-                                <h2>Muksin</h2>
-                            </Link>
-                            <Link to="/profile">
-                                <h3>View complete profile</h3>
-                            </Link>
+                    {userData ? (
+                        <div className="post">
+                            <Link to={`/profile/${uid}`}><img src={userData.image} /></Link>
+                            <div className="textArea">
+                                <Link to={`/profile/${uid}`}>
+                                    <h2>{userData.username}</h2>
+                                </Link>
+                                <Link to={`/profile/${uid}`}>
+                                    <h3>View profile</h3>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                    {/* <div className="notLoggedin">
+                    ) : (
+                        <div className="notLoggedin">
                             <h2>Not Logged In</h2>
-                        </div> */}
+                        </div>
+                    )}
                 </div>
             </div>
         </aside>
