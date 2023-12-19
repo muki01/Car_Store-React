@@ -5,11 +5,12 @@ import { faFacebookF, faInstagram, faTwitter, faYoutube, faGithub } from "@forta
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from '../firebase';
 import { useState, useEffect } from 'react';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 const Aside = () => {
     const [uid, setUid] = useState("");
     const [userData, setUserData] = useState("");
+    const [popularPosts, setPopularPosts] = useState([]);
 
     const handleAuthStateChange = (user) => {
         if (user) {
@@ -28,8 +29,6 @@ const Aside = () => {
             if (userDocSnap.exists()) {
                 const userData = userDocSnap.data();
                 setUserData(userData)
-                // console.log('User data:', userData);
-                // console.log('Liked Posts:', userData.likedPosts);
             } else {
                 console.log('User not found');
             }
@@ -38,9 +37,27 @@ const Aside = () => {
         }
     };
 
+    const fetchPopularPosts = async () => {
+        try {
+            const postsCollection = collection(db, 'posts');
+            const postsQuery = query(postsCollection, orderBy('likes', 'desc'));
+            const postsSnapshot = await getDocs(postsQuery);
+
+            const top3Posts = postsSnapshot.docs.slice(0, 3).map((postDoc) => {
+                const postData = postDoc.data();
+                return { id: postDoc.id, ...postData };
+            });
+
+            setPopularPosts(top3Posts);
+        } catch (error) {
+            console.error('Error fetching popular posts:', error);
+        }
+    };
+
     useEffect(() => {
         onAuthStateChanged(auth, handleAuthStateChange);
-    }, [])
+        fetchPopularPosts()
+    }, [uid, userData])
 
     return (
         <aside>
@@ -72,13 +89,14 @@ const Aside = () => {
                     <h1>Popular Posts</h1>
                     <hr />
 
-
-                    <div className="post">
-                        <Link to="/gameDetails"><img src="/src/assets/images/bmw2.jpg" /></Link>
-                        <Link to="/gameDetails">
-                            <h2>BMW 1</h2>
-                        </Link>
-                    </div>
+                    {popularPosts.map((post) => (
+                        <div className="post" key={post.id}>
+                            <Link to={`/details/${post.id}`}><img src={post.image} /></Link>
+                            <Link to={`/details/${post.id}`}>
+                                <h2>{post.name}</h2>
+                            </Link>
+                        </div>
+                    ))}
 
 
                     {/* <div className="noGames">

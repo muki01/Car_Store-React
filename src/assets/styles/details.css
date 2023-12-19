@@ -188,6 +188,10 @@ section .postArea .options a:hover {
     color: #ff5722;
 }
 
+section .postArea .options .liked {
+    color: red;
+}
+
 section .postArea hr {
     border: 2px solid #e0e0e0;
     margin-bottom: 4px;
@@ -332,6 +336,7 @@ aside .socialMedia .post {
 }
 
 aside .socialMedia .post a {
+    padding: 10px;
     text-align: center;
     border-radius: 5px;
     color: white;
@@ -473,32 +478,11 @@ footer {
     background-color: #1f2024;
 }
 
-footer .navBar {
-    padding: 20px 0 10px 0;
-    text-align: center;
-}
-
-footer .navBar li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-footer .navBar li a {
-    color: white;
-    font-size: 14px;
-    font-family: "Poppins", sans-serif;
-    cursor: pointer;
-}
-
-footer .navBar li a:hover {
-    color: #ff5722;
-}
-
 footer .textArea {
     display: flex;
     justify-content: center;
     text-align: center;
-    padding: 10px 0 30px 0;
+    padding: 20px 0 30px 0;
 }
 
 footer .textArea h1 {

@@ -46,6 +46,7 @@ body::-webkit-scrollbar {
 }
 
 header {
+    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.3);
     width: 100%;
     height: 60px;
     z-index: 1;
@@ -465,32 +466,11 @@ footer {
     background-color: #1f2024;
 }
 
-footer .navBar {
-    padding: 20px 0 10px 0;
-    text-align: center;
-}
-
-footer .navBar li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-footer .navBar li a {
-    color: white;
-    font-size: 14px;
-    font-family: "Poppins", sans-serif;
-    cursor: pointer;
-}
-
-footer .navBar li a:hover {
-    color: #ff5722;
-}
-
 footer .textArea {
     display: flex;
     justify-content: center;
     text-align: center;
-    padding: 10px 0 30px 0;
+    padding: 20px 0 30px 0;
 }
 
 footer .textArea h1 {

@@ -39,6 +39,7 @@ const Create = () => {
                 phoneNumber: phoneNumber,
                 date: new Date(),
                 creatorId: uid,
+                likes: 0,
             });
             navigate("/")
         } catch (error) {
@@ -71,17 +72,17 @@ const Create = () => {
                         <h1 className="formName">Create Post</h1>
                         <form onSubmit={addPost}>
                             <label>Post Name</label>
-                            <input type="text" name="name" onChange={(e) => setName(e.target.value)} minLength="3" required />
+                            <input type="text" value={name} name="name" onChange={(e) => setName(e.target.value)} minLength="3" required />
 
                             <label>Category</label>
-                            <select name="category" defaultValue={""} onChange={(e) => setCategory(e.target.value)} required>
+                            <select name="category" defaultValue={category} onChange={(e) => setCategory(e.target.value)} required>
                                 <option value={""} disabled>Select Category</option>
                                 <option value="cars">Cars</option>
                                 <option value="bikes">Bikes</option>
                             </select>
 
                             <label>Brand</label>
-                            <select name="brand" defaultValue={""} onChange={(e) => setBrand(e.target.value)} required>
+                            <select name="brand" defaultValue={brand} onChange={(e) => setBrand(e.target.value)} required>
                                 <option value={""} disabled>Select Brand</option>
                                 {category == "cars" ? (
                                     <>
@@ -433,18 +434,18 @@ const Create = () => {
                             </select>
 
                             <label>Image URL</label>
-                            <input type="text" name="imageURL" onChange={(e) => setImage(e.target.value)} required
+                            <input type="text" value={image} name="imageURL" onChange={(e) => setImage(e.target.value)} required
                                 pattern="^(https?:\/\/).*\.(jpg|png)$" />
 
                             <label>Description</label>
-                            <textarea name="description" onChange={(e) => setDescription(e.target.value)} required minLength="10">
+                            <textarea name="description" value={description} onChange={(e) => setDescription(e.target.value)} required minLength="10">
                             </textarea>
 
                             <label>Price</label>
-                            <input type="number" name="price" onChange={(e) => setPrice(e.target.value)} min="0" required />
+                            <input type="number" value={price} name="price" onChange={(e) => setPrice(e.target.value)} min="0" required />
 
                             <label>Phone Number</label>
-                            <input type="number" name="phoneNumber" onChange={(e) => setPhoneNumber(e.target.value)} required
+                            <input type="number" value={phoneNumber} name="phoneNumber" onChange={(e) => setPhoneNumber(e.target.value)} required
                                 pattern="^(https?:\/\/).*$" />
 
                             <button className="submitBtn" type="submit" >Create Post</button>

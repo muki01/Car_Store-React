@@ -6,7 +6,6 @@ import Section from "../components/sections";
 import Aside from "../components/aside";
 import { Helmet } from "react-helmet";
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 const Category = () => {
     const { categoryName } = useParams();

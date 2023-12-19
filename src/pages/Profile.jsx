@@ -8,32 +8,65 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from '../firebase';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, updateDoc } from 'firebase/firestore';
 
 const Profile = () => {
-    const { id } = useParams();
+    const { profileId } = useParams();
+    const [uid, setUid] = useState("");
     const [userData, setUserData] = useState("");
-    const [postData, setPostData] = useState("");
+    const [likedPosts, setLikedPosts] = useState("");
+    const [username, setUsername] = useState("");
+    const [image, setImage] = useState("");
 
-    useEffect(() => {
-        getUserInfo(id);
-        if (userData.likedPosts?.length > 0) {
-            getPostInfo(userData.likedPosts[0])
-            console.log("likedPostsData", postData)
+    const [errors, setErrors] = useState({});
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleAuthStateChange = (user) => {
+        if (user) {
+            setUid(user.uid);
+        } else {
+            setUid("");
         }
+    };
 
-    }, [])
+    const handleUsernameChange = (e) => {
+        const { value } = e.target;
+        setUsername(value);
+
+        if (value.length == 0) {
+            setErrors({ ...errors, username: 'Username is required.' });
+        } else if (value.length < 3) {
+            setErrors({ ...errors, username: 'Username must be at least 3 characters.' });
+        } else {
+            setErrors({ ...errors, username: '' });
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const { value } = e.target;
+        setImage(value);
+
+        const imageRegex = /^(https?:\/\/).*\.(jpg|png)$/;
+        if (!value) {
+            setErrors({ ...errors, image: 'Image is required.' })
+        } else if (!imageRegex.test(value)) {
+            setErrors({ ...errors, image: 'Invalid image format.' })
+        } else {
+            setErrors({ ...errors, image: '' });
+        }
+    };
 
     const getUserInfo = async (uid) => {
         try {
-            const userDocRef = doc(db, 'users', uid);
-            const userDocSnap = await getDoc(userDocRef);
+            const userRef = doc(db, 'users', uid);
+            const userDoc = await getDoc(userRef);
 
-            if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
                 setUserData(userData)
-                // console.log('User data:', userData);
-                // console.log('Liked Posts:', userData.likedPosts);
+                setUsername(userData.username);
+                setImage(userData.image);
+                fetchLikedPosts();
             } else {
                 console.log('User not found');
             }
@@ -42,22 +75,63 @@ const Profile = () => {
         }
     };
 
-    const getPostInfo = async (likePostsId) => {
+    const fetchLikedPosts = async () => {
         try {
-            const postDocRef = doc(db, 'posts', likePostsId);
-            const postDocSnap = await getDoc(postDocRef);
+            const likedPostsIds = userData.likedPosts || [];
 
-            if (postDocSnap.exists()) {
-                const postData = postDocSnap.data();
-                setPostData(postData)
-                console.log('Post data:', postData);
-            } else {
-                console.log('Post not found');
-            }
+            const likedPostsData = await Promise.all(
+                likedPostsIds.map(async (postId) => {
+                    const postDoc = await getDoc(doc(db, 'posts', postId));
+                    if (postDoc.exists()) {
+                        return { id: postDoc.id, ...postDoc.data() };
+                    }
+                    return null;
+                })
+            );
+
+            // Boş olmayanları filtrele ve state'i güncelle
+            setLikedPosts(likedPostsData.filter((post) => post !== null));
+
         } catch (error) {
-            console.error('Error fetching post data:', error);
+            console.error('Error fetching liked posts:', error);
         }
     };
+
+    const editInfo = async (e) => {
+        e.preventDefault();
+
+        try {
+            if (!Object.values(errors).some((error) => error !== '')) {
+                const userRef = doc(db, 'users', profileId);
+                await updateDoc(userRef, {
+                    username: username,
+                    image: image,
+
+                });
+                console.log('User data updated successfully');
+            } else {
+                const firstError = Object.values(errors).find((error) => error !== '');
+                setErrorMessage(firstError);
+
+                setTimeout(() => {
+                    setErrorMessage('');
+                }, 3000);
+            }
+        } catch (error) {
+            console.error('Error updating user data:', error);
+            setErrorMessage(error.message);
+
+            setTimeout(() => {
+                setErrorMessage('');
+            }, 3000);
+        }
+    };
+
+    useEffect(() => {
+        onAuthStateChanged(auth, handleAuthStateChange);
+        getUserInfo(profileId);
+
+    }, [profileId])
 
     return (
         <>
@@ -65,6 +139,14 @@ const Profile = () => {
                 <link rel="stylesheet" href="/src/assets/styles/profile.css" />
             </Helmet>
             <Header></Header>
+            {errorMessage ? (
+                <div className="error" >
+                    <div className="errorBox">
+                        <div className="container">
+                            <h1>{errorMessage}</h1>
+                        </div>
+                    </div>
+                </div>) : (<></>)}
             <main id="main">
                 <div className="main-container">
                     <div className="sideBar">
@@ -78,52 +160,60 @@ const Profile = () => {
                         <div className="myGamesArea">
                             <h1>Liked Posts</h1>
                             <hr />
-                            {userData.likedPosts?.length > 0 ? (
+                            {likedPosts?.length > 0 ? (
                                 <div className="postContainer">
-                                    {
-                                        userData.likedPosts?.map((likedPosts, i) => (
-                                            <div className="post" key={i}>
-                                                <Link to="/details"><img src="/src/assets/images/bmw2.jpg" /></Link>
-                                                <Link to="/details">
-                                                    <h2>BMW 1</h2>
-                                                </Link>
-                                            </div>
-                                        ))
+                                    {likedPosts.map((post) => (
+                                        <div className="post" key={post.id}>
+                                            <Link to={`/details/${post.id}`}><img src={post.image} /></Link>
+                                            <Link to={`/details/${post.id}`}>
+                                                <h2>{post.name}</h2>
+                                            </Link>
+                                        </div>
+                                    ))
                                     }
                                 </div>
                             ) : (
-                                <div className="noGames">
-                                    <h2>No Games</h2>
+                                <div className="noPosts">
+                                    <h2>No Liked Posts</h2>
                                 </div>
                             )}
                         </div>
-                        <div className="settingsArea">
-                            <h1>Settings</h1>
-                            <hr />
-                            <div className="settings">
-                                <form>
-                                    <div className="row">
-                                        <h2>User name: </h2>
-                                        <input type="text" name="username" required minLength="3" />
+                        {uid == profileId ? (
+                            <>
+                                <div className="settingsArea">
+                                    <h1>Settings</h1>
+                                    <hr />
+                                    <div className="settings">
+                                        <form onSubmit={editInfo}>
+                                            <div className="row">
+                                                <h2>User name: </h2>
+                                                <input type="text" value={username} name="username" onChange={handleUsernameChange} required minLength="3" />
+                                                {errors.username && <h5 style={{ color: 'red' }}>{errors.username}</h5>}
 
-                                    </div>
+                                            </div>
 
-                                    <div className="row">
-                                        <h2>Profile Photo: </h2>
-                                        <input type="text" name="image" required
-                                            pattern="^(https?:\/\/).*\.(jpg|png)$" />
+                                            <div className="row">
+                                                <h2>Profile Photo: </h2>
+                                                <input type="text" value={image} name="image" onChange={handleImageChange} required
+                                                    pattern="^(https?:\/\/).*\.(jpg|png)$" />
+                                                {errors.image && <h5 style={{ color: 'red' }}>{errors.image}</h5>}
 
-                                    </div>
+                                            </div>
 
-                                    {/* <div className="row">
+                                            {/* <div className="row">
                                         <h2>Profile Title: </h2>
                                         <textarea name="title"></textarea>
                                     </div> */}
 
-                                    <button className="submitBtn" type="submit">Save Changes</button>
-                                </form>
-                            </div>
-                        </div>
+                                            <button className="submitBtn" type="submit">Save Changes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                            </>
+                        )}
                     </section>
                 </div>
             </main>

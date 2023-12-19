@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -12,19 +11,18 @@ import Profile from "./pages/Profile";
 import Details from "./pages/Details";
 
 function App() {
-    // const [count, setCount] = useState(0);
-
     return (
         <>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/category/:categoryName" element={<Category />} />
+                {/* <Route path="/category/:categoryName/:brand" element={<Category />} /> */}
                 <Route path="/create" element={<Create />} />
-                <Route path="/edit/:id" element={<Edit />} />
+                <Route path="/edit/:postId" element={<Edit />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/details/:id" element={<Details />} />
+                <Route path="/profile/:profileId" element={<Profile />} />
+                <Route path="/details/:postId" element={<Details />} />
                 <Route path="*" element={<NotFoundd />} />
             </Routes>
         </>
