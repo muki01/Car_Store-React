@@ -57,7 +57,7 @@ const Aside = () => {
     useEffect(() => {
         onAuthStateChanged(auth, handleAuthStateChange);
         fetchPopularPosts()
-    }, [uid, userData])
+    }, [uid])
 
     return (
         <aside>

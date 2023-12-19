@@ -1,12 +1,3 @@
-header {
-    background-color: transparent;
-    box-shadow: none;
-}
-header .navBar ul li a {
-    color: white;
-    text-shadow: 2px 2px 2px black;
-}
-
 main {
     width: 100%;
     max-width: 1920px;
@@ -24,9 +15,6 @@ main .main-container {
 }
 
 @media screen and (max-width: 1120px) {
-    header {
-        background-color: #fff;
-    }
     main .main-container {
         width: 95%;
     }

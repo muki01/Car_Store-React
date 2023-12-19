@@ -66,7 +66,7 @@ const Profile = () => {
                 setUserData(userData)
                 setUsername(userData.username);
                 setImage(userData.image);
-                fetchLikedPosts();
+                fetchLikedPosts(userData);
             } else {
                 console.log('User not found');
             }
@@ -75,7 +75,7 @@ const Profile = () => {
         }
     };
 
-    const fetchLikedPosts = async () => {
+    const fetchLikedPosts = async (userData) => {
         try {
             const likedPostsIds = userData.likedPosts || [];
 
@@ -91,7 +91,6 @@ const Profile = () => {
 
             // Boş olmayanları filtrele ve state'i güncelle
             setLikedPosts(likedPostsData.filter((post) => post !== null));
-
         } catch (error) {
             console.error('Error fetching liked posts:', error);
         }

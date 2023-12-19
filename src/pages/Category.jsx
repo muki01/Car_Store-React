@@ -12,7 +12,7 @@ const Category = () => {
     return (
         <>
             <Helmet>
-                <link rel="stylesheet" href="/src/assets/styles/style.css" />
+                <link rel="stylesheet" href="/src/assets/styles/category.css" />
             </Helmet>
             <Header></Header>
             <Mainn>
