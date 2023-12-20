@@ -15,8 +15,7 @@
 # Home Page
 This page is public for all users.
 
- ![home](https://github.com/muki01/React_App/assets/75759731/c0745289-a1d1-4a74-8ec1-1b3d68463aeb)
-
+![Home](https://github.com/muki01/React_App/assets/75759731/5bf8cf67-d0db-4f8c-93bc-11ba008c853d)
 
 # Login Page
 The user logs in with their email and password.
