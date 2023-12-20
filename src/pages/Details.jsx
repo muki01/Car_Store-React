@@ -23,6 +23,7 @@ const Details = () => {
 
     const [uid, setUid] = useState("");
     const [postData, setPostData] = useState("");
+    const [creatorData, setCreatorData] = useState("");
     const [randomPosts, setRandomPosts] = useState([]);
 
     const [liked, setLiked] = useState(false);
@@ -53,17 +54,43 @@ const Details = () => {
         }
     };
 
+    const fetchCreatorData = async (uid) => {
+        try {
+            const userRef = doc(db, 'users', uid);
+            const userDoc = await getDoc(userRef);
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setCreatorData(userData)
+            } else {
+                console.log('User not found');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
     const fetchPostData = async (postId) => {
         try {
             const postRef = doc(db, 'posts', postId);
             const postDoc = await getDoc(postRef);
+
             if (postDoc.exists()) {
-                const postData = postDoc.data();
+                let postData = postDoc.data();
+                fetchCreatorData(postData.creatorId)
+
+                const formatedDate = postData.date.toDate().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+                postData = { id: postId, ...postData, date: formatedDate };
                 setPostData(postData);
                 checkIfLiked()
             } else {
                 console.log('Post not found');
             }
+
         } catch (error) {
             console.error('Error fetching post details:', error);
         }
@@ -162,20 +189,25 @@ const Details = () => {
                                             <Link onClick={deletePost}><FontAwesomeIcon icon={faTrashCan} /> Remove </Link>
                                         </>) : <></>
                                     }
-                                    {liked ? (
+                                    {uid ? (
                                         <>
-                                            <Link onClick={handleLike} className="liked"><FontAwesomeIcon icon={SolidHert} /> Liked </Link>
+                                            {liked ? (
+                                                <>
+                                                    <Link onClick={handleLike} className="liked"><FontAwesomeIcon icon={SolidHert} /> Liked </Link>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link onClick={handleLike}><FontAwesomeIcon icon={faHeart} /> Like </Link>
+                                                </>
+                                            )}
                                         </>
                                     ) : (
-                                        <>
-                                            <Link onClick={handleLike}><FontAwesomeIcon icon={faHeart} /> Like </Link>
-                                        </>
-                                    )}
+                                        <></>)}
 
                                 </div>
                             </div>
                             <hr />
-                            <h2><FontAwesomeIcon icon={faUser} /><Link to={`/profile/${postData.creatorId}`}> Muki </Link><FontAwesomeIcon icon={faClock} /> July 23, 2023
+                            <h2><FontAwesomeIcon icon={faUser} /><Link to={`/profile/${postData.creatorId}`}> {creatorData.username} </Link><FontAwesomeIcon icon={faClock} /> {postData.date}
                             </h2>
                             <img src={postData.image} alt="" />
                             <p>Price: {postData.price}</p>

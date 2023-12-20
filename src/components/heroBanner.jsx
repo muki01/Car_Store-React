@@ -6,7 +6,7 @@ const HeroBanner = ({ children }) => {
             <div className="textArea">
                 <div className="container">
                     <h1><span className="highlight">Oxiee</span> Store</h1>
-                    <p>Welcome to our website. On this site you can check and make my project. If you
+                    <p>Welcome to our website. On this site you can watch and buy cars. If you
                         like the page, you can follow it!</p>
                     <a href="#main" className="btn">Get Started</a>
                 </div>
